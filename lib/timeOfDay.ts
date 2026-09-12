@@ -3,9 +3,9 @@ export const TIME_OF_DAY_PERIODS = ["morning", "evening", "night"] as const
 export type TimeOfDay = (typeof TIME_OF_DAY_PERIODS)[number]
 
 export const TIME_OF_DAY_BACKGROUNDS: Record<TimeOfDay, string> = {
-  morning: "/backgrounds/morning.webp",
-  evening: "/backgrounds/evening.webp",
-  night: "/backgrounds/night.webp",
+  morning: "/backgrounds/morning.png",
+  evening: "/backgrounds/evening.png",
+  night: "/backgrounds/night.png",
 }
 
 const MORNING_START_MINUTES = 6 * 60

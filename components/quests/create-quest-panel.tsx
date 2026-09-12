@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { Clock, Coins, Sparkles } from "lucide-react"
 import { useGame } from "@/components/game-provider"
 import {
   CUSTOM_QUEST_GOLD,
@@ -15,6 +16,12 @@ import { formatCountdown } from "@/lib/rpg"
 import type { QuestGenre } from "@/lib/types"
 
 const GENRES: QuestGenre[] = ["INTELLECT", "STRENGTH", "DISCIPLINE"]
+
+const genreStyles: Record<QuestGenre, string> = {
+  INTELLECT: "bg-primary/20 text-primary ring-primary/30",
+  STRENGTH: "bg-lantern/20 text-lantern ring-lantern/30",
+  DISCIPLINE: "bg-gold/20 text-gold ring-gold/30",
+}
 
 export function CreateQuestPanel({
   scheduledDate,
@@ -54,6 +61,7 @@ export function CreateQuestPanel({
     <section className="glass rounded-3xl p-5 sm:p-6">
       <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Create quest</p>
       <h2 className="mt-1 font-display text-2xl font-semibold">Add to the board</h2>
+      <p className="mt-1 text-xs text-muted-foreground">Pick a library quest or craft your own — reward is shown before you commit.</p>
 
       <div className="mt-4 flex gap-2">
         <button
@@ -83,26 +91,26 @@ export function CreateQuestPanel({
             <select
               value={templateId}
               onChange={(event) => setTemplateId(event.target.value)}
-              className="mt-2 w-full rounded-xl bg-background/40 px-3 py-2.5 text-sm ring-1 ring-border outline-none"
+              className="mt-2 w-full rounded-xl bg-background/40 px-3 py-2.5 text-sm ring-1 ring-border outline-none focus:ring-primary/30"
             >
               {sortedLibrary.map((item) => (
                 <option key={item.id} value={item.id}>
-                  {item.name}
+                  {item.name} · {genreLabel(item.genre)}
                 </option>
               ))}
             </select>
           </label>
 
           <fieldset>
-            <legend className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Genre</legend>
+            <legend className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Category</legend>
             <div className="mt-2 flex flex-wrap gap-2">
               {GENRES.map((item) => (
                 <button
                   key={item}
                   type="button"
                   onClick={() => setGenre(item)}
-                  className={`press rounded-full px-3 py-1.5 text-xs ring-1 ${
-                    genre === item ? "bg-primary/25 ring-primary/40" : "bg-background/30 ring-border text-muted-foreground"
+                  className={`press rounded-full px-3 py-1.5 text-xs font-medium ring-1 ${
+                    genre === item ? genreStyles[item] : "bg-background/30 ring-border text-muted-foreground"
                   }`}
                 >
                   {genreLabel(item)}
@@ -112,30 +120,46 @@ export function CreateQuestPanel({
           </fieldset>
 
           <label className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-            {template.unit} ({template.minValue}–{template.maxValue})
+            Quantity — {template.unit} <span className="normal-case text-muted-foreground/70">({template.minValue}–{template.maxValue})</span>
             <input
               type="number"
               min={template.minValue}
               max={template.maxValue}
               value={quantity}
               onChange={(event) => setQuantity(Number(event.target.value))}
-              className="mt-2 w-full rounded-xl bg-background/40 px-3 py-2.5 text-sm ring-1 ring-border outline-none"
+              className="mt-2 w-full rounded-xl bg-background/40 px-3 py-2.5 text-sm ring-1 ring-border outline-none focus:ring-primary/30"
+              placeholder={`${template.minValue}`}
+              aria-describedby="quantity-help"
             />
+            <span id="quantity-help" className="mt-1 block text-[11px] normal-case tracking-normal text-muted-foreground">
+              {quantity < template.minValue || quantity > template.maxValue
+                ? `Must be between ${template.minValue} and ${template.maxValue} ${template.unit}`
+                : `${template.name} — ${template.xpPerUnit} XP per ${template.unit}`}
+            </span>
           </label>
 
-          <div className="rounded-2xl bg-background/30 p-4 ring-1 ring-border">
-            <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Projected reward</p>
-            <p className="mt-1 font-display text-lg text-gold">
-              +{projected.xp} XP · +{projected.gold} Gold
+          <div className="rounded-2xl bg-gradient-to-br from-primary/15 via-background/20 to-gold/10 p-4 ring-1 ring-border">
+            <p className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+              <Sparkles className="size-3.5 text-primary" aria-hidden="true" /> Reward Preview
+            </p>
+            <p className="mt-2 flex items-center gap-2 font-display text-xl font-bold text-gold">
+              <span className="inline-flex items-center gap-1">
+                <Sparkles className="size-4" aria-hidden="true" /> +{projected.xp} XP
+              </span>
+              <span className="text-muted-foreground">·</span>
+              <span className="inline-flex items-center gap-1">
+                <Coins className="size-4" aria-hidden="true" /> +{projected.gold} GOLD
+              </span>
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              {template.xpPerUnit} XP per {template.unit} · cooldown {template.cooldownMinutes}m
+              {template.xpPerUnit} XP + {template.goldPerUnit} gold per {template.unit} · cooldown {template.cooldownMinutes}m
             </p>
           </div>
 
           {libraryCooldown > 0 ? (
-            <p className="text-sm text-lantern">
-              QUEST COOLDOWN {formatCountdown(libraryCooldown)} remaining
+            <p className="flex items-center justify-center gap-1.5 rounded-xl bg-lantern/10 px-3 py-2 text-sm font-medium text-lantern ring-1 ring-lantern/20">
+              <Clock className="size-4" aria-hidden="true" />
+              COOLDOWN {formatCountdown(libraryCooldown)} remaining
             </p>
           ) : null}
 
@@ -162,7 +186,7 @@ export function CreateQuestPanel({
               })
               onCreated?.()
             }}
-            className="press inline-flex items-center justify-center rounded-xl bg-gradient-to-b from-primary/90 to-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 ring-1 ring-primary/50 disabled:opacity-50"
+            className="press inline-flex items-center justify-center rounded-xl bg-gradient-to-b from-primary/90 to-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 ring-1 ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Create Quest
           </button>
@@ -170,15 +194,15 @@ export function CreateQuestPanel({
       ) : (
         <div className="mt-4 grid gap-4">
           <fieldset>
-            <legend className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Genre</legend>
+            <legend className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Category</legend>
             <div className="mt-2 flex flex-wrap gap-2">
               {GENRES.map((item) => (
                 <button
                   key={item}
                   type="button"
                   onClick={() => setGenre(item)}
-                  className={`press rounded-full px-3 py-1.5 text-xs ring-1 ${
-                    genre === item ? "bg-primary/25 ring-primary/40" : "bg-background/30 ring-border text-muted-foreground"
+                  className={`press rounded-full px-3 py-1.5 text-xs font-medium ring-1 ${
+                    genre === item ? genreStyles[item] : "bg-background/30 ring-border text-muted-foreground"
                   }`}
                 >
                   {genreLabel(item)}
@@ -191,43 +215,60 @@ export function CreateQuestPanel({
             <input
               value={customName}
               onChange={(event) => setCustomName(event.target.value)}
-              className="mt-2 w-full rounded-xl bg-background/40 px-3 py-2.5 text-sm ring-1 ring-border outline-none"
+              className="mt-2 w-full rounded-xl bg-background/40 px-3 py-2.5 text-sm ring-1 ring-border outline-none focus:ring-primary/30"
               placeholder="Tea ceremony practice"
+              maxLength={40}
             />
           </label>
           <label className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-            Description
+            Description <span className="normal-case text-muted-foreground/60">(optional)</span>
             <textarea
               value={customDescription}
               onChange={(event) => setCustomDescription(event.target.value)}
-              className="mt-2 min-h-20 w-full rounded-xl bg-background/40 px-3 py-2.5 text-sm ring-1 ring-border outline-none"
+              className="mt-2 min-h-20 w-full rounded-xl bg-background/40 px-3 py-2.5 text-sm ring-1 ring-border outline-none focus:ring-primary/30"
+              placeholder="A quiet moment to practice..."
+              maxLength={120}
             />
           </label>
           <label className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-            Value / quantity (optional)
+            Value / quantity <span className="normal-case text-muted-foreground/60">(optional)</span>
             <input
               value={customQuantity}
               onChange={(event) => setCustomQuantity(event.target.value)}
-              className="mt-2 w-full rounded-xl bg-background/40 px-3 py-2.5 text-sm ring-1 ring-border outline-none"
+              className="mt-2 w-full rounded-xl bg-background/40 px-3 py-2.5 text-sm ring-1 ring-border outline-none focus:ring-primary/30"
               placeholder="30 minutes"
             />
           </label>
-          <div className="rounded-2xl bg-background/30 p-4 ring-1 ring-border">
-            <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Custom quest reward</p>
-            <p className="mt-1 font-display text-lg text-gold">
-              +{CUSTOM_QUEST_XP} XP · +{CUSTOM_QUEST_GOLD} Gold
+          <div className="rounded-2xl bg-gradient-to-br from-gold/10 via-background/20 to-primary/10 p-4 ring-1 ring-border">
+            <p className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+              <Sparkles className="size-3.5 text-gold" aria-hidden="true" /> Custom Reward
+            </p>
+            <p className="mt-2 flex items-center gap-2 font-display text-lg font-bold text-gold">
+              <span className="inline-flex items-center gap-1">+{CUSTOM_QUEST_XP} XP</span>
+              <span className="text-muted-foreground">·</span>
+              <span className="inline-flex items-center gap-1">
+                <Coins className="size-4" aria-hidden="true" /> +{CUSTOM_QUEST_GOLD} GOLD
+              </span>
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Custom quests grant a medium XP reward and low gold to keep the economy honest.
+              Fixed medium reward to keep the economy honest · cooldown {45}m
             </p>
           </div>
           {customCooldown > 0 ? (
-            <p className="text-sm text-lantern">QUEST COOLDOWN {formatCountdown(customCooldown)} remaining</p>
+            <p className="flex items-center justify-center gap-1.5 rounded-xl bg-lantern/10 px-3 py-2 text-sm font-medium text-lantern ring-1 ring-lantern/20">
+              <Clock className="size-4" aria-hidden="true" />
+              COOLDOWN {formatCountdown(customCooldown)} remaining
+            </p>
           ) : null}
           <button
             type="button"
-            disabled={customCooldown > 0}
+            disabled={customCooldown > 0 || !customName.trim()}
             onClick={() => {
+              if (!customName.trim()) {
+                setLocalError("Give the quest a name.")
+                return
+              }
+              setLocalError(null)
               dispatch({
                 type: "CREATE_CUSTOM_QUEST",
                 name: customName,
@@ -239,14 +280,18 @@ export function CreateQuestPanel({
               })
               onCreated?.()
             }}
-            className="press inline-flex items-center justify-center rounded-xl bg-gradient-to-b from-primary/90 to-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 ring-1 ring-primary/50 disabled:opacity-50"
+            className="press inline-flex items-center justify-center rounded-xl bg-gradient-to-b from-primary/90 to-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 ring-1 ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Create Quest
+            Create Custom Quest
           </button>
         </div>
       )}
 
-      {(localError || error) && <p className="mt-3 text-sm text-destructive">{localError || error}</p>}
+      {(localError || error) && (
+        <p className="mt-3 rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive ring-1 ring-destructive/20">
+          {localError || error}
+        </p>
+      )}
     </section>
   )
 }
