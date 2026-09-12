@@ -1,6 +1,5 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Cinzel, Inter } from 'next/font/google'
 import { Petals } from '@/components/environment/petals'
 import { TopNav } from '@/components/dashboard/top-nav'
 import { FloatingNav } from '@/components/navigation/floating-nav'
@@ -11,16 +10,10 @@ import { TimeOfDayProvider } from '@/components/time-of-day-provider'
 import { WorldBackground } from '@/components/WorldBackground'
 import './globals.css'
 
-const displayFont = Cinzel({
-  subsets: ['latin'],
-  weight: ['500', '600', '700'],
-  variable: '--font-display',
-})
-
-const bodyFont = Inter({
-  subsets: ['latin'],
-  variable: '--font-sans',
-})
+// Offline-safe font fallback – avoids external fetch to fonts.googleapis.com during build
+// Keeps --font-display / --font-sans variables so Sakura/glass styling is unchanged; falls back to system fonts
+const displayFont = { variable: '--font-display' } as const
+const bodyFont = { variable: '--font-sans' } as const
 
 export const metadata: Metadata = {
   title: 'NETHRA: Life-RPG',
