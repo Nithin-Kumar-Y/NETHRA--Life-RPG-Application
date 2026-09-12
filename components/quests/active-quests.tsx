@@ -1,17 +1,18 @@
 "use client"
 
-import { useState } from "react"
 import { ScrollText } from "lucide-react"
-import { quests } from "@/lib/data"
 import { QuestCard } from "./quest-card"
+import type { Quest } from "@/lib/types"
 
-export function ActiveQuests() {
-  const [done, setDone] = useState<Set<string>>(new Set())
-
-  function handleComplete(id: string) {
-    setDone((prev) => new Set(prev).add(id))
-  }
-
+export function ActiveQuests({
+  quests,
+  heading = "Today's Active Quests",
+  empty = "No quests on the board. Create one from the library or a custom path.",
+}: {
+  quests: Quest[]
+  heading?: string
+  empty?: string
+}) {
   return (
     <section aria-labelledby="quests-heading" className="flex flex-col gap-3">
       <div className="flex items-center gap-2 px-1">
@@ -20,20 +21,19 @@ export function ActiveQuests() {
           id="quests-heading"
           className="font-display text-sm font-semibold uppercase tracking-[0.25em]"
         >
-          Active Quests
+          {heading}
         </h2>
       </div>
 
-      <div className="grid gap-3">
-        {quests.map((quest) => (
-          <QuestCard
-            key={quest.id}
-            quest={quest}
-            completed={done.has(quest.id)}
-            onComplete={handleComplete}
-          />
-        ))}
-      </div>
+      {quests.length === 0 ? (
+        <p className="glass rounded-2xl p-4 text-sm text-muted-foreground">{empty}</p>
+      ) : (
+        <div className="grid gap-3">
+          {quests.map((quest) => (
+            <QuestCard key={quest.id} quest={quest} />
+          ))}
+        </div>
+      )}
     </section>
   )
 }
