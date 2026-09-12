@@ -5,6 +5,7 @@ import { TopNav } from '@/components/dashboard/top-nav'
 import { FloatingNav } from '@/components/navigation/floating-nav'
 import { GameProvider } from '@/components/game-provider'
 import { VillageGate } from '@/components/onboarding/village-gate'
+import { QuestCelebration } from '@/components/quests/quest-celebration'
 import { TimeOfDayDevSwitch } from '@/components/TimeOfDayDevSwitch'
 import { TimeOfDayProvider } from '@/components/time-of-day-provider'
 import { WorldBackground } from '@/components/WorldBackground'
@@ -46,6 +47,7 @@ export default function RootLayout({
               </div>
               <FloatingNav />
               <VillageGate />
+              <QuestCelebration />
               {process.env.NODE_ENV === 'development' && <TimeOfDayDevSwitch />}
             </div>
           </GameProvider>
