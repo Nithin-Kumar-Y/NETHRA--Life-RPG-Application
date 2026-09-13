@@ -46,5 +46,9 @@ export function loadGameState(): GameState {
 
 export function saveGameState(state: GameState) {
   if (typeof window === "undefined") return
-  window.localStorage.setItem(GAME_STORAGE_KEY, JSON.stringify(state))
+  try {
+    window.localStorage.setItem(GAME_STORAGE_KEY, JSON.stringify(state))
+  } catch {
+    // ignore quota / SecurityError (e.g. third-party iframe, private mode)
+  }
 }

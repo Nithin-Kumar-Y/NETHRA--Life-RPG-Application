@@ -31,10 +31,12 @@ export function TimeOfDayProvider({ children }: { children: ReactNode }) {
     }
 
     if (process.env.NODE_ENV === "development") {
-      const stored = window.localStorage.getItem(DEV_OVERRIDE_KEY)
-      if (stored === "morning" || stored === "evening" || stored === "night") {
-        setOverrideState(stored)
-      }
+      try {
+        const stored = window.localStorage.getItem(DEV_OVERRIDE_KEY)
+        if (stored === "morning" || stored === "evening" || stored === "night") {
+          setOverrideState(stored)
+        }
+      } catch {}
     }
 
     syncNatural()
@@ -53,11 +55,13 @@ export function TimeOfDayProvider({ children }: { children: ReactNode }) {
   const setOverride = useCallback((period: TimeOfDay | null) => {
     setOverrideState(period)
     if (process.env.NODE_ENV !== "development") return
-    if (period) {
-      window.localStorage.setItem(DEV_OVERRIDE_KEY, period)
-    } else {
-      window.localStorage.removeItem(DEV_OVERRIDE_KEY)
-    }
+    try {
+      if (period) {
+        window.localStorage.setItem(DEV_OVERRIDE_KEY, period)
+      } else {
+        window.localStorage.removeItem(DEV_OVERRIDE_KEY)
+      }
+    } catch {}
   }, [])
 
   const value = useMemo<TimeOfDayContextValue>(
