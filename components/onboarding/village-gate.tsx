@@ -171,10 +171,11 @@ export function VillageGate() {
 
 export function AvatarMark({ id, name }: { id: AvatarId; name: string }) {
   const initial = name.trim().slice(0, 1).toUpperCase() || "N"
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ""
   if (id === "ronin") {
     return (
       <img
-        src="/character/ronin.png"
+        src={`${basePath}/character/ronin.png`}
         alt=""
         className="size-full min-h-16 rounded-lg object-cover"
         loading="lazy"
