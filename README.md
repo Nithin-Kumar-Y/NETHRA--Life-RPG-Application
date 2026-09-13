@@ -1,11 +1,17 @@
  NETHRA — Life RPG
+ 
 > Turn your real life into a Japanese fantasy RPG. Complete quests, earn XP & Gold, level up.
+> 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Auth%20%26%20DB-3FCF8E?style=flat-square&logo=supabase)](https://supabase.com/)
 [![Deployed on GitHub Pages](https://img.shields.io/badge/Deployed-GitHub%20Pages-181717?style=flat-square&logo=github)](https://nethra-life-rpg-application.vercel.app)
-**Live Demo:** https://Nithin-Kumar-Y.github.io/NETHRA--Life-RPG-Application/
+
+**Live Demo:** 
+https://nethra-life-rpg-application.vercel.app
+
 NETHRA is a gamified life-tracker with a Sakura / glass-morphism theme. You create a character and village, pick quests from a library or create custom ones, complete them daily, and watch your Intellect / Strength / Discipline attributes grow. Works offline with `localStorage` and syncs securely to Supabase when logged in.
+
 ---
 ### Features
 **Core Gameplay**
