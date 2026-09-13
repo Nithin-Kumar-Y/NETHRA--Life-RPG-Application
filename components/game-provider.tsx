@@ -213,23 +213,40 @@ export function GameProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!ready) return
     const tick = () => {
-      setNow(Date.now())
-      setState((current) => reduceGame(current, { type: "SYNC_DAY" }).state)
-      const supabase = getSupabase()
-      const userId = supabaseUserIdRef.current
-      if (supabase && userId) {
-        const tz = getBrowserTimezone()
-        void (supabase.rpc("expire_overdue_quests", { p_timezone: tz }) as unknown as Promise<any>).then(() => {}).catch(() => {})
-      }
+      try {
+        setNow(Date.now())
+      } catch {}
+      try {
+        setState((current) => reduceGame(current, { type: "SYNC_DAY" }).state)
+      } catch {}
+      try {
+        const supabase = getSupabase()
+        const userId = supabaseUserIdRef.current
+        if (supabase && userId) {
+          const tz = getBrowserTimezone()
+          void (supabase.rpc("expire_overdue_quests", { p_timezone: tz }) as unknown as Promise<any>).then(() => {}).catch(() => {})
+        }
+      } catch {}
     }
-    const interval = window.setInterval(tick, 1_000)
+    let interval: number | null = null
     const onVisibility = () => {
-      if (document.visibilityState === "visible") tick()
+      try {
+        if (typeof document !== "undefined" && document.visibilityState === "visible") tick()
+      } catch {}
     }
-    document.addEventListener("visibilitychange", onVisibility)
+    try {
+      interval = window.setInterval(tick, 1_000)
+    } catch {}
+    try {
+      document.addEventListener("visibilitychange", onVisibility)
+    } catch {}
     return () => {
-      window.clearInterval(interval)
-      document.removeEventListener("visibilitychange", onVisibility)
+      try {
+        if (interval) window.clearInterval(interval)
+      } catch {}
+      try {
+        document.removeEventListener("visibilitychange", onVisibility)
+      } catch {}
     }
   }, [ready])
 

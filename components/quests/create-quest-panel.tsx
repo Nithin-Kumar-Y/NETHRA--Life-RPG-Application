@@ -42,8 +42,15 @@ export function CreateQuestPanel({
   const [, setTick] = useState(0)
 
   useEffect(() => {
-    const interval = window.setInterval(() => setTick((value) => value + 1), 1000)
-    return () => window.clearInterval(interval)
+    let interval: number | null = null
+    try {
+      interval = window.setInterval(() => setTick((value) => value + 1), 1000)
+    } catch {}
+    return () => {
+      try {
+        if (interval) window.clearInterval(interval)
+      } catch {}
+    }
   }, [])
 
   const template = getQuestTemplate(templateId)

@@ -1,14 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Petals } from '@/components/environment/petals'
-import { TopNav } from '@/components/dashboard/top-nav'
-import { FloatingNav } from '@/components/navigation/floating-nav'
-import { GameProvider } from '@/components/game-provider'
-import { VillageGate } from '@/components/onboarding/village-gate'
-import { QuestCelebration } from '@/components/quests/quest-celebration'
 import { TimeOfDayDevSwitch } from '@/components/TimeOfDayDevSwitch'
-import { TimeOfDayProvider } from '@/components/time-of-day-provider'
-import { WorldBackground } from '@/components/WorldBackground'
+import { ProvidersWrapper } from '@/components/providers-wrapper'
 import './globals.css'
 
 // Offline-safe font fallback – avoids external fetch to fonts.googleapis.com during build
@@ -33,26 +26,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const isGithubPages = !!process.env.NEXT_PUBLIC_BASE_PATH
   return (
     <html lang="en" className={`${displayFont.variable} ${bodyFont.variable} bg-background`}>
       <body className="bg-background font-sans antialiased">
-        <TimeOfDayProvider>
-          <GameProvider>
-            <WorldBackground />
-            <Petals />
-            <div className="relative min-h-screen">
-              <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-28 pt-4 sm:px-6 lg:pl-24">
-                <TopNav />
-                {children}
-              </div>
-              <FloatingNav />
-              <VillageGate />
-              <QuestCelebration />
-              {process.env.NODE_ENV === 'development' && <TimeOfDayDevSwitch />}
-            </div>
-          </GameProvider>
-        </TimeOfDayProvider>
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        <ProvidersWrapper>
+          {children}
+          {process.env.NODE_ENV === 'development' && <TimeOfDayDevSwitch />}
+        </ProvidersWrapper>
+        {process.env.NODE_ENV === 'production' && !isGithubPages && <Analytics />}
       </body>
     </html>
   )

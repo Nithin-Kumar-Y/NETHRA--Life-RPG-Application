@@ -15,8 +15,15 @@ export function QuestCelebration() {
       return
     }
     if (celebration.leveledUp) {
-      const t = window.setTimeout(() => setShowLevelUp(true), 900)
-      return () => window.clearTimeout(t)
+      let t: number | null = null
+      try {
+        t = window.setTimeout(() => setShowLevelUp(true), 900)
+      } catch {}
+      return () => {
+        try {
+          if (t) window.clearTimeout(t)
+        } catch {}
+      }
     }
   }, [celebration])
 
@@ -25,8 +32,14 @@ export function QuestCelebration() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") dismissCelebration()
     }
-    document.addEventListener("keydown", onKey)
-    return () => document.removeEventListener("keydown", onKey)
+    try {
+      document.addEventListener("keydown", onKey)
+    } catch {}
+    return () => {
+      try {
+        document.removeEventListener("keydown", onKey)
+      } catch {}
+    }
   }, [celebration, dismissCelebration])
 
   if (!celebration) return null

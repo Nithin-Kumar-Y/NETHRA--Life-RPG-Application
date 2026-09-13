@@ -40,15 +40,26 @@ export function TimeOfDayProvider({ children }: { children: ReactNode }) {
     }
 
     syncNatural()
-    const interval = window.setInterval(syncNatural, 30_000)
+    let interval: number | null = null
     const onVisibility = () => {
-      if (document.visibilityState === "visible") syncNatural()
+      try {
+        if (typeof document !== "undefined" && document.visibilityState === "visible") syncNatural()
+      } catch {}
     }
-    document.addEventListener("visibilitychange", onVisibility)
+    try {
+      interval = window.setInterval(syncNatural, 30_000)
+    } catch {}
+    try {
+      document.addEventListener("visibilitychange", onVisibility)
+    } catch {}
 
     return () => {
-      window.clearInterval(interval)
-      document.removeEventListener("visibilitychange", onVisibility)
+      try {
+        if (interval) window.clearInterval(interval)
+      } catch {}
+      try {
+        document.removeEventListener("visibilitychange", onVisibility)
+      } catch {}
     }
   }, [])
 

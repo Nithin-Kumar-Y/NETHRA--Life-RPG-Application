@@ -250,12 +250,14 @@ function MemoryMatch({ onClose }: { onClose: () => void }) {
                 if (nextPicked.length === 2) {
                   const [a, b] = nextPicked
                   if (next[a].symbol !== next[b].symbol) {
-                    window.setTimeout(() => {
-                      setCards((current) =>
-                        current.map((item, i) => (i === a || i === b ? { ...item, face: false } : item)),
-                      )
-                      setPicked([])
-                    }, 700)
+                    try {
+                      window.setTimeout(() => {
+                        setCards((current) =>
+                          current.map((item, i) => (i === a || i === b ? { ...item, face: false } : item)),
+                        )
+                        setPicked([])
+                      }, 700)
+                    } catch {}
                   } else {
                     setPicked([])
                     if (next.every((item) => item.face)) {
@@ -299,7 +301,9 @@ function LanternFlash({ onClose }: { onClose: () => void }) {
       note: "Lantern Flash",
     })
     setPhase("wait")
-    window.setTimeout(() => setPhase("go"), 700 + Math.random() * 1600)
+    try {
+      window.setTimeout(() => setPhase("go"), 700 + Math.random() * 1600)
+    } catch {}
   }
 
   return (

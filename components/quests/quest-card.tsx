@@ -20,8 +20,15 @@ export function QuestCard({ quest }: { quest: Quest }) {
   const cooldown = cooldownRemaining(cooldownKey(quest.templateId, quest.name))
 
   useEffect(() => {
-    const interval = window.setInterval(() => setTick((value) => value + 1), 1000)
-    return () => window.clearInterval(interval)
+    let interval: number | null = null
+    try {
+      interval = window.setInterval(() => setTick((value) => value + 1), 1000)
+    } catch {}
+    return () => {
+      try {
+        if (interval) window.clearInterval(interval)
+      } catch {}
+    }
   }, [])
 
   const completed = quest.status === "completed"
