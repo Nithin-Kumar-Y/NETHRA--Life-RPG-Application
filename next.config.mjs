@@ -5,6 +5,7 @@ const nextConfig = {
   ...(isGithubPages ? { output: 'export' } : {}),
   ...(isGithubPages ? { basePath: '/NETHRA--Life-RPG-Application' } : {}),
   ...(isGithubPages ? { assetPrefix: '/NETHRA--Life-RPG-Application/' } : {}),
+  ...(isGithubPages ? { trailingSlash: true } : {}),
   typescript: {
     ignoreBuildErrors: true,
   },
